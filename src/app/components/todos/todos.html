@@ -1,0 +1,32 @@
+<h1>Todo Data:</h1>
+
+
+<input type="text" [(ngModel)]="newTodoTitle" placeholder="Type a task here" />
+
+<p>{{newTodoTitle}}</p>
+
+<ul>
+    @for(task of myTasks; track task.id)
+    {
+        <li [ngClass]="{'strike-through':task.isCompleted}">{{task.title}}</li>
+    }
+    @if(myTasks.length===0){
+        <p>All tasks completed</p>
+    }
+    @else
+    {
+        <p [ngStyle]="{ 'font-weight': myTasks.length > 2 ? 'bold' : 'normal' }">Pending Tasks: {{myTasks.length}}</p>
+    }
+    <!-- <li *ngFor="let item of myTasks; let id=index">{{item.title}}</li> -->
+</ul>
+<!-- <p *ngIf="isPending">Pending</p> -->
+
+<!-- @switch(selectedPriority){
+    @case('high'){<span>High</span>}
+    @case('medium'){<span>Medium</span>}
+    @case('low'){<span>Low</span>}
+    @default {<span>Normal</span>}
+} -->
+
+<button [disabled]="isAdded" (click)="addTodo()">Add Todo</button>
+

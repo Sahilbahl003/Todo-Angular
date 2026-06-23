@@ -1,0 +1,15 @@
+{
+  "todos": [
+    {
+      "id": "1",
+      "title": "First Task",
+      "completed": false
+    },
+    {
+      "id": "2",
+      "title": "Second Task",
+      "completed": true
+    }
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
+}
