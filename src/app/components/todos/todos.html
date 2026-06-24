@@ -1,14 +1,51 @@
-<h1>Todo Data:</h1>
+<h1>Todo:</h1>
 
 
-<input type="text" [(ngModel)]="newTodoTitle" placeholder="Type a task here" />
+<!-- <input type="text" [(ngModel)]="newTodoTitle" placeholder="Type a task here" /> -->
 
-<p>{{newTodoTitle}}</p>
+<!-- <form #todoForm="ngForm" (ngSubmit)="addTodo()">
+    <input name="formTitle" type="text" [(ngModel)]="newTodoTitle" required minlength="4" />
+    <button type="submit" [disabled]="todoForm.invalid">Add Todo</button>
+</form> -->
+
+<form [formGroup]="taskForm" (ngSubmit)="submitReactiveForm()">
+    <input type="text" placeholder="Enter Task..." formControlName="titleInput" />
+    @if(taskForm.get('titleInput')?.touched && taskForm.get('titleInput')?.invalid)
+    {
+        <div style="color: red; font-size: 0.8rem; margin-top: 5px;">
+            @if(taskForm.get('titleInput')?.errors?.['required'])
+            {
+                <p>Task cannot be left blank</p>
+            }
+            @if(taskForm.get('titleInput')?.errors?.['minlength'])
+            {
+                <p>task should have minimum 4 characters</p>
+            }
+        </div>
+    }
+    <button type="submit" [disabled]="taskForm.invalid">
+    {{ isEditMode ? 'Save Changes' : 'Add Todo' }}
+  </button>
+   @if (isEditMode) {
+    <button type="button" (click)="cancelEdit()" style="margin-left: 10px;">Cancel</button>
+  }
+</form>
+
+<!-- <p>{{taskForm.value.titleInput}}</p> -->
 
 <ul>
     @for(task of myTasks; track task.id)
     {
-        <li [ngClass]="{'strike-through':task.isCompleted}">{{task.title}}</li>
+        <div style="display: flex; justify-content: space-between; align-items: center; width: 30%; padding-top: 10px;">
+            <li [ngClass]="{'strike-through':task.isCompleted}">{{task.title}}</li>
+            <div style="display: flex; gap: 10px;">
+                <button type="button" (click)="startEditTodo(task)">Edit</button>
+                <button type="button" (click)="deleteReactiveForm(task.id)">Delete</button>
+            </div>
+             
+            <!-- <button (click)="updateReactiveForm()">edit</button> -->
+        </div>
+        
     }
     @if(myTasks.length===0){
         <p>All tasks completed</p>
@@ -28,5 +65,5 @@
     @default {<span>Normal</span>}
 } -->
 
-<button [disabled]="isAdded" (click)="addTodo()">Add Todo</button>
+<!-- <button [disabled]="isAdded" (click)="addTodo()">Add Todo</button> -->
 
