@@ -1,16 +1,16 @@
-import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
+import { afterNextRender, ChangeDetectorRef, Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { NgFor, NgIf, NgClass, NgStyle } from '@angular/common';
+import { NgFor, NgIf, NgClass, NgStyle, DatePipe } from '@angular/common';
 import {Todo} from '../../services/todo'//import todod service
 
 @Component({
   selector: 'app-todos',
-  imports: [ReactiveFormsModule,NgFor,NgIf,NgClass,NgStyle],
+  imports: [ReactiveFormsModule,NgFor,NgIf,NgClass,NgStyle,DatePipe],
   templateUrl: './todos.html',
   styleUrl: './todos.scss',
 })
 
-export class Todos implements OnInit{
+export class Todos implements OnInit,OnDestroy{
   isAdded:boolean=false
   isPending:boolean=true
 
@@ -22,6 +22,11 @@ export class Todos implements OnInit{
 
   newTodoTitle=''
   myTasks:any[]=[]
+  computerUsername = signal<string>('Loading...');
+
+  // 4. Create a reactive signal for the device date/time
+  deviceDateTime = signal<Date | null>(null); 
+  private clockIntervalId: any;
 
    // 2. Use inject() to connec component to our (service)
   private todoService = inject(Todo);
@@ -31,6 +36,29 @@ export class Todos implements OnInit{
     //Creating input tracker field with two validations
     titleInput: new FormControl('',[Validators.required,Validators.minLength(4)])
   })
+
+   constructor() {
+    // FIX: Safely wrap browser-only API references inside afterNextRender
+    afterNextRender(() => {
+      if (typeof window !== 'undefined' && (window as any).electronAPI) {
+        (window as any).electronAPI.getSystemUsername().then((returnedName: string) => {
+          // Save the desktop system name inside our reactive signal container safely
+          this.computerUsername.set(returnedName);
+        }).catch((err: any) => console.error("Electron API Error:", err));
+      }
+    });
+
+
+     // --- Live Clock Setup ---
+      // Set the initial local device time immediately on the client side
+      this.deviceDateTime.set(new Date());
+
+      // Update the device clock every single second
+      this.clockIntervalId = setInterval(() => {
+        this.deviceDateTime.set(new Date());
+      }, 1000);
+
+    }
 
   ngOnInit() {
     // 3. Pull the tasks from the service when the page loads
@@ -45,7 +73,8 @@ export class Todos implements OnInit{
       error:(err)=>{
         console.error("Error occured",err);
       }       
-    })
+    });
+  
   }
 
 
@@ -145,6 +174,14 @@ deleteReactiveForm(taskId:number){
    }
   })
 }
+
+ngOnDestroy() {
+    if (this.clockIntervalId) {
+      clearInterval(this.clockIntervalId);
+    }
+  }
+
+
 
   // taskPriority=['high','medium','low']
   // selectedPriority:string='low'
