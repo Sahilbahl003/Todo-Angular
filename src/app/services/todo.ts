@@ -29,6 +29,10 @@ export class Todo {
   deleteTaskFromServer(taskId:number):Observable<any>{
     return this.http.delete<any>(`${this.apiUrl}/${taskId}`);
   }
+
+   fetchExternalUsers(): Observable<any[]> {
+    return this.http.get<any[]>('https://dummyjson.com/users');
+  }
   // myTasks = [
   //   { id: 10, title: 'Buy groceries from the market', isCompleted: false },
   //   { id: 20, title: 'Fix the bedroom lighting setup', isCompleted: true },

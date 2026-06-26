@@ -1,6 +1,7 @@
-const { app, BrowserWindow,ipcMain } = require('electron');
+const { app, BrowserWindow,ipcMain,dialog } = require('electron');
 const path = require('path');
 const os = require('os');
+const fs = require('fs')
 
 
 
@@ -9,7 +10,8 @@ function createDesktopWindow() {
     width: 900,
     height: 700,
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js')
+      preload: path.join(__dirname, 'preload.js'),
+      webSecurity:false
     }
     // webPreferences: {
     //   nodeIntegration: false, // Security Best Practice: Keep turned off!
@@ -28,6 +30,36 @@ ipcMain.handle('request-username', async () => {
   const username = os.userInfo().username; 
   return username; // Send this string securely back up to Angular!
 });
+
+//for save data in c drive hardcoded
+ipcMain.handle('write-user-json', async (event, usersDataArray) => {
+  try {
+    const { writeFileSync } = require('fs');
+    const uniqueTimestamp = Date.now();
+     const filePath = `C:\\api-data\\api-users-1782465640790.json`;  // Direct path to C Drive
+    const jsonString = JSON.stringify(usersDataArray, null, 2); // Convert to JSON string
+    
+   fs.writeFileSync(filePath, jsonString, 'utf8'); // Physically save file
+    return { success: true, savedPath: filePath };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+});
+
+// Direct file reading from C Drive
+ipcMain.handle('read-user-json', async () => {
+  try {
+    const { readFileSync } = require('fs');
+    const filePath = 'C:\\api-data\\api-users-1782465640790.json'; // The target path to read from
+    
+    const rawContent = readFileSync(filePath, 'utf8'); // Read file content text
+    return JSON.parse(rawContent); // Convert text data block back into a real JSON array!
+  } catch (error) {
+    console.error('Read failed:', error);
+    return null; // Return null if the file doesn't exist yet
+  }
+});
+
 
 
 // Boot up the desktop window container shell when Electron is ready

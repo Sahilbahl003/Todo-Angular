@@ -1,7 +1,51 @@
-<h1>Todo:</h1>
+<hr style="margin-top: 30px;">
+<div style="background: #eef5ff; padding: 20px; border-radius: 8px;">
+  <h3>Write Data into C-Drive File</h3>
+  
+  <!-- 1. Wrap inputs inside an official [formGroup] tag linked to our TS file component -->
+  <form [formGroup]="fileForm" (ngSubmit)="writeInputDataToFile()" style="margin-bottom: 15px;">
+    
+    <!-- 2. Connect fields using formControlName properties -->
+    <input type="text" formControlName="nameInput" placeholder="Enter Full Name..." style="padding: 6px; width: 200px;" />
+    <input type="email" formControlName="emailInput" placeholder="Enter Email..." style="padding: 6px; width: 200px; margin-left: 10px;" />
+    
+    <!-- 3. Clean click invocation with zero inline parameters -->
+    <button type="submit" style="margin-left: 10px; background: #28a745; color: white; border: 0; padding: 6px 12px; border-radius: 4px; cursor: pointer;">
+       Write into File
+    </button>
+  </form>
 
-<p><strong>{{computerUsername()}}</strong></p>
-<p>{{deviceDateTime()| date:'medium'}} </p>
+  <button type="button" (click)="readDataFromCDrive()" style="background: #007bff; color: white; border: 0; padding: 6px 12px; border-radius: 4px; cursor: pointer;">
+     Load & Read File
+  </button>
+
+   @if (readDiskData().length > 0) {
+    <h5 style="color: #007bff; margin-top: 15px;">Current File Contents On Disk:</h5>
+    <ul style="background: white; padding: 15px; border-radius: 4px; border: 1px solid #ccc;">
+      @for (user of readDiskData(); track user.id) {
+        <!--  Updated row layout container box with a flex line layout -->
+        <li style="display: flex; justify-content: space-between; align-items: center; padding: 4px 0;">
+          <span>User: <strong>{{ user.firstName }}</strong> — Email: {{ user.email }}</span>
+          
+          <!-- Clicking this triggers our new delete logic on this specific user timestamp ID -->
+          <button type="button" (click)="deleteCustomUserFromFile(user.id)" style="background: #dc3545; color: white; border: 0; padding: 4px 8px; border-radius: 3px; cursor: pointer; font-size: 0.8rem;">
+            Delete
+          </button>
+        </li>
+      }
+    </ul>
+  }
+
+</div>
+
+
+
+
+
+<!-- <h1>Todo:</h1>
+
+<p><strong>Username: {{computerUsername()}}</strong></p>
+<p>Date and Time: {{deviceDateTime()| date:'medium'}} </p> -->
 
 
 <!-- <input type="text" [(ngModel)]="newTodoTitle" placeholder="Type a task here" /> -->
@@ -11,7 +55,7 @@
     <button type="submit" [disabled]="todoForm.invalid">Add Todo</button>
 </form> -->
 
-<form [formGroup]="taskForm" (ngSubmit)="submitReactiveForm()">
+<!-- <form [formGroup]="taskForm" (ngSubmit)="submitReactiveForm()">
     <input type="text" placeholder="Enter Task..." formControlName="titleInput" />
     @if(taskForm.get('titleInput')?.touched && taskForm.get('titleInput')?.invalid)
     {
@@ -32,11 +76,11 @@
    @if (isEditMode) {
     <button type="button" (click)="cancelEdit()" style="margin-left: 10px;">Cancel</button>
   }
-</form>
+</form> -->
 
 <!-- <p>{{taskForm.value.titleInput}}</p> -->
 
-<ul>
+<!-- <ul>
     @for(task of myTasks; track task.id)
     {
         <div style="display: flex; justify-content: space-between; align-items: center; width: 30%; padding-top: 10px;">
@@ -46,7 +90,6 @@
                 <button type="button" (click)="deleteReactiveForm(task.id)">Delete</button>
             </div>
              
-            <!-- <button (click)="updateReactiveForm()">edit</button> -->
         </div>
         
     }
@@ -57,8 +100,7 @@
     {
         <p [ngStyle]="{ 'font-weight': myTasks.length > 2 ? 'bold' : 'normal' }">Pending Tasks: {{myTasks.length}}</p>
     }
-    <!-- <li *ngFor="let item of myTasks; let id=index">{{item.title}}</li> -->
-</ul>
+</ul> -->
 <!-- <p *ngIf="isPending">Pending</p> -->
 
 <!-- @switch(selectedPriority){
